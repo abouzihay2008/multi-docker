@@ -1,22 +1,22 @@
 sudo: required
-service: 
+services:
   - docker
-before_install:  
-  -docker build -t abouzihay/react-test ./client/Dockerfile.dev ./client
+
+before_install:
+  - docker build -t abouzihay/react-test -f ./client/Dockerfile.dev ./client
 
 script:
-  -docker run abouzihay/react-test npm test -- --coverage
+  - docker run abouzihay/react-test npm test -- --coverage
 
-after_success:  
-
-    -docker build -t abouzihay/mult-client  ./client
-    -docker build -t abouzihay/mult-nginx  ./nginx
-    -docker build -t abouzihay/mult-server  ./server
-    -docker build -t abouzihay/mult-worker  ./worker
-# log into docker CLI
-- echo "$DOCKER_PASSWORD" | docker login -u  "$DOCKER_ID" --password-stdin
-# take the images and push them to  docker hub
-- docker push abouzihay/mult-client
-- docker push abouzihay/mult-nginx 
-- docker push abouzihay/mult-server
-- docker push abouzihay/mult-worker
+after_success:
+  - docker build -t abouzihay/mult-client ./client
+  - docker build -t abouzihay/mult-nginx ./nginx
+  - docker build -t abouzihay/mult-server ./server
+  - docker build -t abouzihay/mult-worker ./worker
+  # Log into Docker CLI
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  # Push images to Docker Hub
+  - docker push abouzihay/mult-client
+  - docker push abouzihay/mult-nginx
+  - docker push abouzihay/mult-server
+  - docker push abouzihay/mult-worker

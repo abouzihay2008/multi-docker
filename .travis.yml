@@ -2,20 +2,18 @@ sudo: required
 services:
   - docker
 
-before_install: 
+before_install:
   - docker build -t abouzihay/react-test -f ./client/Dockerfile.dev ./client
 
-script: 
+script:
   - docker run abouzihay/react-test npm test -- --coverage
 
-after_success: 
+after_success:
   - docker build -t abouzihay/mult-client ./client
   - docker build -t abouzihay/mult-nginx ./nginx
   - docker build -t abouzihay/mult-server ./server
   - docker build -t abouzihay/mult-worker ./worker
- 
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
- 
   - docker push abouzihay/mult-client
   - docker push abouzihay/mult-nginx
   - docker push abouzihay/mult-server

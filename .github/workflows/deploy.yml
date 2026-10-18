@@ -1,0 +1,45 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Build the test container
+      run: docker build -t abouzihay/react-test -f ./client/Dockerfile.dev ./client
+
+    - name: Run tests
+      run: docker run -e CI=true abouzihay/react-test npm test -- --coverage --watchAll=false
+
+  deploy:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Build production images
+      run: |
+        docker build -t abouzihay/mult-client ./client
+        docker build -t abouzihay/mult-nginx ./nginx
+        docker build -t abouzihay/mult-server ./server
+        docker build -t abouzihay/mult-worker ./worker
+
+    - name: Log in to Docker Hub
+      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_ID }}" --password-stdin
+
+    - name: Push images to Docker Hub
+      run: |
+        docker push abouzihay/mult-client
+        docker push abouzihay/mult-nginx
+        docker push abouzihay/mult-server
+        docker push abouzihay/mult-worker

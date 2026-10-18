@@ -16,7 +16,11 @@ jobs:
       run: docker build -t abouzihay/react-test -f ./client/Dockerfile.dev ./client
 
     - name: Run tests
+<<<<<<< HEAD
       run: docker run -e CI=true abouzihay/react-test npm test -- --coverage --watchAll=false
+=======
+      run: docker run abouzihay/react-test npm test -- --coverage
+>>>>>>> d20bbfa0af645f1c109e95d5ff4e989cbaf3dd98
 
   deploy:
     needs: build-and-test
@@ -42,4 +46,8 @@ jobs:
         docker push abouzihay/mult-client
         docker push abouzihay/mult-nginx
         docker push abouzihay/mult-server
+<<<<<<< HEAD
         docker push abouzihay/mult-worker
+=======
+        docker push abouzihay/mult-worker
+>>>>>>> d20bbfa0af645f1c109e95d5ff4e989cbaf3dd98
